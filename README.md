@@ -7,4 +7,5 @@ Em caso de dúvidas, envie uma mensagem aqui ou entre em contato via email/pesso
 
 ----------------------------------------------------------------------------------
 Por gentileza, não distribuir/copiar/comercializar/etc. o conteúdo do repositório.
+
 Licença AGPL v3.0
