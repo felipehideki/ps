@@ -5,10 +5,12 @@ Repositório para consulta de algoritmos para MATLAB utilizados em processamento
 
 Em caso de dúvidas, envie uma mensagem aqui ou entre em contato via email/pessoalmente.
 
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
 
 Apesar da licença Open Source AGPL v3.0, peço por gentileza que não  distribua/copie/comercialize/etc. o conteúdo do repositório.
 
-Obrigado e bons estudos!
+---------------------------------------------------------------------------------------------------------------------
+
+Bons estudos!
 
 F.H.
