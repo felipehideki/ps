@@ -12,16 +12,16 @@ for i=1:size(ecos,1)
 end
 
 % % b)
-m = median(numpeaks); % Número médio de reflexões em cada eco, camadas
+m = min(numpeaks); % NÃºmero mÃ­nimo de reflexÃµes em cada eco, camadas
 
 % % c)
-auxr = numpeaks <= m; % Ecos com número de reflexões correspondentes à média
-er = length(numpeaks(auxr)); % Número de ecos coletados corretamente
+auxr = numpeaks <= m; % Ecos com nÃºmero de reflexÃµes correspondentes Ã  mÃ©dia
+er = length(numpeaks(auxr)); % NÃºmero de ecos coletados corretamente
 msgbox(sprintf('Foram coletados %g/100 ecos corretamente.', er));
 
 % t = [1:length(pulse)]/fs;
 % tlag = lag/fs;
 % figure;
 % plot(tlag, c{numero_do_eco});
-% title('Eco nº',num2str(numero_do_eco));
+% title('Eco nÂº',num2str(numero_do_eco));
 % xlabel('time lag');
