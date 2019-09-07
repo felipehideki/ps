@@ -1,4 +1,4 @@
-# sp - MATLAB Signal Processing
+# sp - Signal Processing (MATLAB)
 
 Repositório para consulta de algoritmos para MATLAB utilizados em processamento de sinais.
 
