@@ -15,7 +15,7 @@ end
 m = min(numpeaks); % Número mínimo de reflexões em cada eco, camadas
 
 % % c)
-auxr = numpeaks <= m; % Ecos com número de reflexões correspondentes à média
+auxr = numpeaks <= m; % Ecos com número de reflexões correspondentes ao mínimo
 er = length(numpeaks(auxr)); % Número de ecos coletados corretamente
 msgbox(sprintf('Foram coletados %g/100 ecos corretamente.', er));
 
