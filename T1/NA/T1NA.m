@@ -16,6 +16,6 @@ num_reflexoes = length(reflexoes); % Número de reflexões = número de picos
 
 % % d)
 treflexao = amostrareflexao/fs;
-for i=1:4
+for i=1:num_reflexoes
     profundidade_sinal(i) = (treflexao(i)/2)*15.4; % Profundidade em cm
 end
