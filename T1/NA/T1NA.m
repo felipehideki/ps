@@ -1,18 +1,18 @@
-% % T1-NA
+% % T1 NA
 clear all;
 close all;
 
 load('eco_US.mat');
 
 % % a)
-tsinal = length(eco)/fs; % Tempo de coleta do sinal = número de amostras/fs
+tsinal = length(eco)/fs; % Tempo de coleta do sinal = nÃºmero de amostras/fs
 
 % % b)
 [corr_ecopulse,lag] = xcorr(eco,pulse);
 
 % % c)
 [reflexoes,amostrareflexao] = findpeaks(corr_ecopulse,'Minpeakheight',250);
-num_reflexoes = length(reflexoes); % Número de reflexões = número de picos
+num_reflexoes = length(reflexoes); % NÃºmero de reflexÃµes = nÃºmero de picos
 
 % % d)
 treflexao = amostrareflexao/fs;
