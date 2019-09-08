@@ -5,12 +5,12 @@ close all;
 load('data_turma-IA.mat');
 
 % % a)
-tsinal = y/fs; % Tempo de coleta do sinal = número de amostras/fs
+tsinal = length(y)/fs; % Tempo de coleta do sinal = nÃºmero de amostras/fs
 
 % % b)
 [corr_ypulse,lag] = xcorr(y,pulse);
 [picos,posicao_pico] = findpeaks(corr_ypulse,'Minpeakheight',150);
-num_reflexoes = length(picos); % Número de reflexões = número de picos
+num_reflexoes = length(picos); % NÃºmero de reflexÃµes = nÃºmero de picos
 
 % % c)
 treflexao = (posicao_pico - (length(lag)/2))/fs; % Eliminando espelhamento
