@@ -1,3 +1,7 @@
+% % LAB4 Ex.3
+clear all;
+close all;
+
 fs = 1000;
 t = 0:1/fs:7;
 
