@@ -1,3 +1,4 @@
+% % LAB4 Ex.2
 clear all;
 close all;
 
@@ -14,16 +15,15 @@ sigfft = fft(sig);
 f = (0:length(sigfft)-1)*fs/length(sigfft);
 
 figure;
+subplot(3,1,1);
 plot(f,2*abs(sigfft)/numel(sigfft));
 xlim([0 fs/2]);
 xlabel('Magnitude');
-
-figure;
+subplot(3,1,2);
 plot(f,real(sigfft));
 xlim([0 fs/2]);
-xlabel('Real');
-
-figure;
+xlabel('Parte Real');
+subplot(3,1,3);
 plot(f,imag(sigfft));
 xlim([0 fs/2]);
-xlabel('Imagin·rio');
+xlabel('Parte Imagin√°ria');
