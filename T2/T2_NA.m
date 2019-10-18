@@ -14,13 +14,12 @@ for i=1:length(y)-25
         if (sw == 1)
             termino(cont) = i;
             sinal{cont} = y(inicio(cont):termino(cont));
-            sw = 0;
             sigfft{cont} = fft(sinal{cont});
             [pospeaks{cont},peaks{cont}] = findpeaks(abs(sigfft{cont}),'Minpeakheight', 620);
             sigfft{cont} = fftshift(sigfft{cont});
             n{cont} = numel(sigfft{cont});
             freq{cont} = linspace(-n{cont}/2,n{cont}/2,n{cont}).*fs/n{cont};
-            
+            sw = 0;
             cont = cont + 1;
         end
     else
