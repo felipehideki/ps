@@ -1,10 +1,10 @@
-% % PROJETO FINAL - PROCESSAMENTO DE SINAIS - PROF. THIAGO MARTINI
+%% PROJETO FINAL - PROCESSAMENTO DE SINAIS - PROF. THIAGO MARTINI
 
 % % ALINE URNA
 % % BRUNA SALGADO
 % % FELIPE HATANO
 
-%% a) Filtragem por filtro FIR low-pass (wc ~ 1633Hz) e Downsampling
+% % a) Filtragem por filtro FIR low-pass (wc ~ 1633Hz) e Downsampling
 close all
 clear all
 
@@ -51,10 +51,19 @@ fatorDS = floor(fs/(2*1633));
 sinalDS = downsample(sinal_comAA,fatorDS);
 fsdown = fs/fatorDS;
 tDS = (0:1/(fs/fatorDS):ttotal);
-figure;
-plot(tDS,sinalDS,'LineWidth',1.0);
-title('Sinal após filtragem AA e downsampling');
-xlabel('Segundos');
+% figure(4);
+% plot(tDS,sinalDS,'LineWidth',1.0);
+% title('Sinal após filtragem AA e downsampling');
+% xlabel('Segundos');
+
+sinalDSfft = fftshift(fft(sinalDS));
+freqnormDS = linspace(-1,1,numel(sinalDSfft));
+figure(3);
+hold on;
+plot(freqnormDS,2*(abs(sinalDSfft).^2),'LineWidth',1.0);
+xlim([0 1]);
+title('Espectro da energia do sinal downsampled');
+xlabel('Frequência normalizada');
 
 %% b) Projetando FIR para remover frequências indesejadas
 
@@ -73,6 +82,10 @@ wn = [0.1 0.97];
 filtroHamming = fir1(1000,wn,rectwin(1001));
 sigHamming = conv(sinalDS,filtroHamming,'same');
 sigHammingfft = fftshift(fft(sigHamming));
-freqnormDS = linspace(-1,1,numel(sigHammingfft));
+figure(3);
 plot(freqnormDS,2*(abs(sigHammingfft).^2),'LineWidth',1.0);
 xlim([0 1]);
+title('Espectro da energia do sinal downsampled filtrado');
+xlabel('Frequência normalizada');
+legend('Downsampled s/filtro','c/filtro');
+
