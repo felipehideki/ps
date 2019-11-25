@@ -75,7 +75,7 @@ xlabel('Frequência normalizada');
 % % Portanto, uma frequência de corte de 0.1 para a filtragem
 % % passa-alta, garantindo que 697Hz esteja seguramente dentro da banda.
 % % Da mesma forma, 1633Hz corresponde a aproximadamente 0.9628, então
-% % utilizaremos uma frequência de corte de 0.97 para a filtragem
+% % foi utilizada uma frequência de corte de 0.97 para a filtragem
 % % passa-baixa.
 
 wn = [0.1 0.97];
