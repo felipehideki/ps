@@ -48,8 +48,8 @@ legend('Original','Filtrado');
 % % Downsampling
 fatorDS = floor(fs/(2*1633));
 sinalDS = downsample(sinal_comAA,fatorDS);
-fsdown = fs/fatorDS;
-tDS = (0:1/(fs/fatorDS):ttotal);
+fsDS = fs/fatorDS;
+tDS = (0:1/fsDS:ttotal);
 sinalDSfft = fftshift(fft(sinalDS));
 freqnormDS = linspace(-1,1,numel(sinalDSfft));
 figure(3);
@@ -86,6 +86,7 @@ xlim([0 1]);
 xlabel('Frequência normalizada');
 legend('Downsampled s/filtro','Hamming');
 % freqz(filtroHamming);
+% plot(tDS,sigHamming);
 
 % Kaiser
 filtroKaiser = fir1(1000,wn,kaiser(1001,4));
@@ -100,3 +101,4 @@ xlim([0 1]);
 xlabel('Frequência normalizada');
 legend('Downsampled s/filtro','Kaiser');
 % freqz(filtroKaiser);
+% plot(tDS,sigKaiser);
