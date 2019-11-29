@@ -64,7 +64,7 @@ xlabel('Frequência normalizada');
 % % frequências entre 697Hz e 1633Hz, ou seja, um janelamento entre essas
 % % frequências é um método eficiente para remover a maior parte das
 % % frequências indesejadas.
-% % Em range normalizado, 697Hz corresponde a 697/(fsdown/2) = 0.1027. 
+% % Em range normalizado, 697Hz corresponde a 697/(fsDS/2) = 0.1027. 
 % % Da mesma forma, 1633Hz corresponde a aproximadamente 0.9628.
 % % Para realizar uma atenuação de 99.999% das frequências indesejadas, é
 % % necessário ajustar a frequência de corte para os filtros projetados tal
@@ -102,3 +102,14 @@ xlabel('Frequência normalizada');
 legend('Downsampled s/filtro','Kaiser');
 % freqz(filtroKaiser);
 % plot(tDS,sigKaiser);
+
+%% Separando as teclas do sinal, no domínio do tempo
+
+%inicio = [1.347 2.0520 2.7880 3.784 4.613 6.42 7.09 7.768];
+%termino = [1.488 2.232 2.954 3.934 4.782 5.56 6.663 7.216 7.908];
+
+%sigBin = sigHamming ~= 0;
+
+%for i=1:8
+%    sinalTeclas{i} = sigBin((inicio(i)*fsDS):(termino(i)*fsDS));
+%end
