@@ -25,18 +25,18 @@ figure(2);
 plot(freqnorm,2*(abs(sigfft).^2),'LineWidth',1.0); % Espectro de energia
 hold on;
 
-% % Filtro FIR para frequência normalizada (wc 1633Hz ~ wcn 0.08)
-filtroAA = fir1(100,0.08,'low'); % Janelamento Hamming
+% % Filtro FIR para frequência normalizada (wc 1633Hz ~ wcn 0.0741)
+filtroAA = fir1(1000,0.0741,kaiser(1001,10)); % Janelamento Kaiser
 sinal_comAA = conv(sinal_final,filtroAA,'same');
 figure(1);
-plot(t,sinal_comAA);
+plot(t,sinal_comAA,'r');
 title('Sinal com filtro AA (pre-downsampled) vs. Original');
 xlabel('Segundos');
 legend('Original','Filtrado');
 
 sinal_comAAfft = fftshift(fft(sinal_comAA));
 figure(2);
-plot(freqnorm,2*(abs(sinal_comAAfft).^2),'LineWidth',1.0);
+plot(freqnorm,2*(abs(sinal_comAAfft).^2),'r','LineWidth',1.0);
 xlim([0 1]);
 title('Espectro da energia com filtro AA (pre-downsampled) vs. Original');
 xlabel('Frequência normalizada');
@@ -60,56 +60,67 @@ xlabel('Frequência normalizada');
 
 %% b) Projetando FIR para remover frequências indesejadas
 
-% % A sinalização DTMF (Dual-Tone Multi-Frequency) produz sons em
-% % frequências entre 697Hz e 1633Hz, ou seja, um janelamento entre essas
-% % frequências é um método eficiente para remover a maior parte das
-% % frequências indesejadas.
-% % Em range normalizado, 697Hz corresponde a 697/(fsDS/2) = 0.1027. 
-% % Da mesma forma, 1633Hz corresponde a aproximadamente 0.9628.
+% % A sinalização DTMF (Dual-Tone Multi-Frequency) produz dois sons: um em
+% % frequências entre 697Hz e 941Hz e outro entre as frequências 1209Hz e
+% % 1633Hz. Ou seja, janelamentos passa-faixa entre essas frequências é
+% % um método eficiente para remover a maior parte das frequências
+% % indesejadas.
 % % Para realizar uma atenuação de 99.999% das frequências indesejadas, é
 % % necessário ajustar a frequência de corte para os filtros projetados tal
-% % que o decaimento seja 20log(0.00001) = -120dB.
+% % que o decaimento seja 20*log10(1-0.99999) = -100dB.
 
-wn = [0.3 0.9];
+% Vetores de frequências normalizadas
+wn1 = [697/(fsDS/2) 941/(fsDS/2)]; 
+wn2 = [1209/(fsDS/2) 1633/(fsDS/2)];
 
 % Hamming
-filtroHamming = fir1(1000,wn,hamming(1001));
-sigHamming = conv(sinalDS,filtroHamming,'same');
+filtroHamming1 = fir1(1000,wn1,hamming(1001));
+filtroHamming2 = fir1(1000,wn2,hamming(1001));
+filtroHammingSoma = filtroHamming1 + filtroHamming2;
+sigHamming = conv(sinalDS,filtroHammingSoma,'same');
 sigHammingfft = fftshift(fft(sigHamming));
 figure(4);
 subplot(2,1,1);
 plot(freqnormDS,2*(abs(sinalDSfft).^2),'LineWidth',1.0);
 title('Espectro da energia do sinal downsampled vs. filtrado');
 hold on;
-plot(freqnormDS,2*(abs(sigHammingfft).^2),'LineWidth',1.0);
+plot(freqnormDS,2*(abs(sigHammingfft).^2),'r','LineWidth',1.0);
 xlim([0 1]);
 xlabel('Frequência normalizada');
 legend('Downsampled s/filtro','Hamming');
-% freqz(filtroHamming);
+hold off;
+% freqz(filtroHammingSoma);
 % plot(tDS,sigHamming);
 
 % Kaiser
-filtroKaiser = fir1(1000,wn,kaiser(1001,4));
-sigKaiser = conv(sinalDS,filtroKaiser,'same');
+filtroKaiser1 = fir1(1000,wn1,kaiser(1001,10));
+filtroKaiser2 = fir1(1000,wn2,kaiser(1001,10));
+filtroKaiserSoma = filtroKaiser1 + filtroKaiser2;
+sigKaiser = conv(sinalDS,filtroKaiserSoma,'same');
 sigKaiserfft = fftshift(fft(sigKaiser));
 figure(4);
 subplot(2,1,2);
 plot(freqnormDS,2*(abs(sinalDSfft).^2),'LineWidth',1.0);
 hold on;
-plot(freqnormDS,2*(abs(sigKaiserfft).^2),'LineWidth',1.0);
+plot(freqnormDS,2*(abs(sigKaiserfft).^2),'r','LineWidth',1.0);
 xlim([0 1]);
 xlabel('Frequência normalizada');
 legend('Downsampled s/filtro','Kaiser');
-% freqz(filtroKaiser);
+hold off;
 % plot(tDS,sigKaiser);
+% freqz(filtroKaiser1);
 
-%% Separando as teclas do sinal, no domínio do tempo
+%% Separando o sinal nos intervalos dos quais as teclas foram pressionadas
+% Dessa forma, é possível diminuir a intensidade espectral do ruído
 
-%inicio = [1.347 2.0520 2.7880 3.784 4.613 6.42 7.09 7.768];
-%termino = [1.488 2.232 2.954 3.934 4.782 5.56 6.663 7.216 7.908];
+inicio = [1.347 1.9520 2.7880 3.784 4.613 5.411 6.42 7.09 7.768];
+termino = [1.488 2.232 2.954 3.934 4.782 5.56 6.663 7.216 7.908];
 
-%sigBin = sigHamming ~= 0;
-
-%for i=1:8
-%    sinalTeclas{i} = sigBin((inicio(i)*fsDS):(termino(i)*fsDS));
-%end
+for i=1:9
+   intervalo{i} = tDS>=inicio(i) & tDS<=termino(i);
+   sinalTeclas{i} = sigKaiser(intervalo{i});
+   figure;
+   freqTeclas{i} = linspace(-fsDS/2,fsDS/2,numel(sinalTeclas{i}));
+   plot(freqTeclas{i},abs(fftshift(fft(sinalTeclas{i}))).^2);
+   xlim([0 fsDS/2]);
+end
