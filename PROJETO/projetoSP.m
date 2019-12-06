@@ -174,7 +174,7 @@ end
 %    intervalo{i} = t>=inicio(i) & t<=termino(i);
 %    sinalTeclas{i} = sinalTeste(intervalo{i});
 %    % Inserção de zeros (zero padding) de 1ªordem para aumento da resolução.
-%    sinalTeclas{i} = [sinalTeclas{i} zeros(1,7*numel(sinalTeclas{i}))];
+%    sinalTeclas{i} = [sinalTeclas{i} zeros(1,numel(sinalTeclas{i}))];
 %    % Obs.: a inserção de zeros também auxilia no tempo de processamento de
 %    % algoritmos FFT, pois tais algoritmos são mais eficientes quando o
 %    % número de amostras é uma potência de 2.
