@@ -74,8 +74,8 @@ wn1 = [697/(fsDS/2) 941/(fsDS/2)];
 wn2 = [1209/(fsDS/2) 1633/(fsDS/2)];
 
 % Hamming
-filtroHamming1 = fir1(1000,wn1,hamming(1001));
-filtroHamming2 = fir1(1000,wn2,hamming(1001));
+filtroHamming1 = fir1(100,wn1,hamming(101));
+filtroHamming2 = fir1(100,wn2,hamming(101));
 filtroHammingSoma = filtroHamming1 + filtroHamming2;
 sigHamming = conv(sinalDS,filtroHammingSoma,'same');
 sigHammingfft = fftshift(fft(sigHamming));
@@ -93,8 +93,8 @@ hold off;
 % plot(tDS,sigHamming);
 
 % Kaiser
-filtroKaiser1 = fir1(1000,wn1,kaiser(1001,10));
-filtroKaiser2 = fir1(1000,wn2,kaiser(1001,10));
+filtroKaiser1 = fir1(1000,wn1,kaiser(1001,5));
+filtroKaiser2 = fir1(1000,wn2,kaiser(1001,5));
 filtroKaiserSoma = filtroKaiser1 + filtroKaiser2;
 sigKaiser = conv(sinalDS,filtroKaiserSoma,'same');
 sigKaiserfft = fftshift(fft(sigKaiser));
@@ -107,20 +107,57 @@ xlim([0 1]);
 xlabel('Frequência normalizada');
 legend('Downsampled s/filtro','Kaiser');
 hold off;
+% freqz(filtroKaiserSoma);
 % plot(tDS,sigKaiser);
-% freqz(filtroKaiser1);
 
 %% Separando o sinal nos intervalos dos quais as teclas foram pressionadas
 % Dessa forma, é possível diminuir a intensidade espectral do ruído
 
-inicio = [1.347 1.9520 2.7880 3.784 4.613 5.411 6.42 7.09 7.768];
-termino = [1.488 2.232 2.954 3.934 4.782 5.56 6.663 7.216 7.908];
+% Os "inícios" e "términos" são intervalos de tempo que contém os instantes
+% dos quais as teclas foram pressionadas. Esses dados foram obtidos
+% empiricamente observando o gráfico no domínio do tempo do sinal filtrado.
+inicio = [1.264 1.925 2.7880 3.784 4.613 5.411 6.42 7.05 7.768];
+% termino = [1.488 2.232 2.954 3.934 4.782 5.56 6.663 7.216 7.908];
 
 for i=1:9
+   termino(i) = inicio(i)+0.2; % Inicio +0.2 segundos
    intervalo{i} = tDS>=inicio(i) & tDS<=termino(i);
    sinalTeclas{i} = sigKaiser(intervalo{i});
-   figure;
+   % Inserção de zeros (zero padding) de 1ªordem para aumento da resolução.
+   sinalTeclas{i} = [sinalTeclas{i} zeros(1,numel(sinalTeclas{i}))];
+   % Obs.: a inserção de zeros também auxilia no tempo de processamento de
+   % algoritmos FFT, pois tais algoritmos são mais eficientes quando o
+   % número de amostras é uma potência de 2.
+   fftTeclas{i} = fftshift(fft(sinalTeclas{i}));
    freqTeclas{i} = linspace(-fsDS/2,fsDS/2,numel(sinalTeclas{i}));
-   plot(freqTeclas{i},abs(fftshift(fft(sinalTeclas{i}))).^2);
+   figure;
+   plot(freqTeclas{i},2*(abs(fftTeclas{i}).^2));
    xlim([0 fsDS/2]);
 end
+
+%% teste
+% wnt1 = [697/(fs/2) 941/(fs/2)]; 
+% wnt2 = [1209/(fs/2) 1633/(fs/2)];
+% kaisert1 = fir1(1000,wnt1,kaiser(1001,5));
+% kaisert2 = fir1(1000,wnt2,kaiser(1001,5));
+% kaiserteste = kaisert1 + kaisert2;
+% sinalTeste = conv(sinal_final, kaiserteste,'same');
+% 
+% inicio = [1.264 1.925 2.7880 3.784 4.613 5.411 6.42 7.05 7.768];
+% % termino = [1.488 2.232 2.954 3.934 4.782 5.56 6.663 7.216 7.908];
+% 
+% for i=1:9
+%    termino(i) = inicio(i)+0.3; % Inicio +0.2 segundos
+%    intervalo{i} = t>=inicio(i) & t<=termino(i);
+%    sinalTeclas{i} = sinalTeste(intervalo{i});
+%    % Inserção de zeros (zero padding) de 1ªordem para aumento da resolução.
+%    sinalTeclas{i} = [sinalTeclas{i} zeros(1,7*numel(sinalTeclas{i}))];
+%    % Obs.: a inserção de zeros também auxilia no tempo de processamento de
+%    % algoritmos FFT, pois tais algoritmos são mais eficientes quando o
+%    % número de amostras é uma potência de 2.
+%    fftTeclas{i} = fftshift(fft(sinalTeclas{i}));
+%    freqTeclas{i} = linspace(-fs/2,fs/2,numel(sinalTeclas{i}));
+%    figure;
+%    plot(freqTeclas{i},2*(abs(fftTeclas{i}).^2));
+%    xlim([0 fsDS/2]);
+% end
