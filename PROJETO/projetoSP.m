@@ -22,25 +22,27 @@ hold on;
 sigfft = fftshift(fft(sinal_final));
 freqnorm = linspace(-1,1,numel(sigfft));
 figure(2);
+subplot(2,1,1);
 plot(freqnorm,2*(abs(sigfft).^2),'LineWidth',1.0); % Espectro de energia
-hold on;
+xlim([0 1]);
+title('Espectro de energia do sinal original');
 
 % % Filtro FIR para frequência normalizada (wc 1633Hz ~ wcn 0.0741)
 filtroAA = fir1(1000,0.0741,kaiser(1001,10)); % Janelamento Kaiser
 sinal_comAA = conv(sinal_final,filtroAA,'same');
 figure(1);
-plot(t,sinal_comAA,'r');
-title('Sinal com filtro AA (pre-downsampled) vs. Original');
+plot(t,sinal_comAA,'r','LineWidth',1.5);
+title('Sinal original vs. Sinal com filtro AA');
 xlabel('Segundos');
 legend('Original','Filtrado');
 
 sinal_comAAfft = fftshift(fft(sinal_comAA));
 figure(2);
+subplot(2,1,2);
 plot(freqnorm,2*(abs(sinal_comAAfft).^2),'r','LineWidth',1.0);
 xlim([0 1]);
-title('Espectro da energia com filtro AA (pre-downsampled) vs. Original');
-xlabel('Frequência normalizada');
-legend('Original','Filtrado');
+title('Espectro da energia com filtro AA (pre-downsampled)');
+% xlabel('Frequência normalizada');
 
 % % Lembrando que o filtro FIR possui fase linear, i.e., causa um atraso
 % % de grupo no sinal.
@@ -74,8 +76,8 @@ wn1 = [697/(fsDS/2) 941/(fsDS/2)];
 wn2 = [1209/(fsDS/2) 1633/(fsDS/2)];
 
 % Hamming
-filtroHamming1 = fir1(100,wn1,hamming(101));
-filtroHamming2 = fir1(100,wn2,hamming(101));
+filtroHamming1 = fir1(1000,wn1,hamming(1001));
+filtroHamming2 = fir1(1000,wn2,hamming(1001));
 filtroHammingSoma = filtroHamming1 + filtroHamming2;
 sigHamming = conv(sinalDS,filtroHammingSoma,'same');
 sigHammingfft = fftshift(fft(sigHamming));
@@ -90,7 +92,6 @@ xlabel('Frequência normalizada');
 legend('Downsampled s/filtro','Hamming');
 hold off;
 % freqz(filtroHammingSoma);
-% plot(tDS,sigHamming);
 
 % Kaiser
 filtroKaiser1 = fir1(1000,wn1,kaiser(1001,5));
@@ -108,7 +109,29 @@ xlabel('Frequência normalizada');
 legend('Downsampled s/filtro','Kaiser');
 hold off;
 % freqz(filtroKaiserSoma);
-% plot(tDS,sigKaiser);
+
+% % Sinal antes, depois e diferença 
+figure;
+subplot(3,1,1);
+plot(tDS,sinalDS);
+title('Antes (pré-Hamming)');
+subplot(3,1,2);
+plot(tDS,sigHamming);
+title('Depois (pós-Hamming)');
+subplot(3,1,3);
+plot(tDS,sinalDS-sigHamming);
+title('Diferença (antes - depois)');
+
+figure;
+subplot(3,1,1);
+plot(tDS,sinalDS);
+title('Antes (pré-Kaiser)');
+subplot(3,1,2);
+plot(tDS,sigKaiser);
+title('Depois (pós-Kaiser)');
+subplot(3,1,3);
+plot(tDS,sinalDS-sigKaiser);
+title('Diferença (antes - depois)');
 
 %% Separando o sinal nos intervalos dos quais as teclas foram pressionadas
 % Dessa forma, é possível diminuir a intensidade espectral do ruído
@@ -119,6 +142,7 @@ hold off;
 inicio = [1.264 1.925 2.7880 3.784 4.613 5.411 6.42 7.05 7.768];
 % termino = [1.488 2.232 2.954 3.934 4.782 5.56 6.663 7.216 7.908];
 
+% Determinando as teclagens, do sinal filtrado com janela Kaiser
 for i=1:9
    termino(i) = inicio(i)+0.2; % Inicio +0.2 segundos
    intervalo{i} = tDS>=inicio(i) & tDS<=termino(i);
@@ -131,17 +155,16 @@ for i=1:9
    fftTeclas{i} = fftshift(fft(sinalTeclas{i}));
    freqTeclas{i} = linspace(-fsDS/2,fsDS/2,numel(sinalTeclas{i}));
    figure;
-   plot(freqTeclas{i},2*(abs(fftTeclas{i}).^2));
+   plot(freqTeclas{i},2*(abs(fftTeclas{i}).^2));   
    xlim([0 fsDS/2]);
+   str = sprintf('Teclagem %d', i);
+   title(str);
 end
 
-%% teste
-% wnt1 = [697/(fs/2) 941/(fs/2)]; 
-% wnt2 = [1209/(fs/2) 1633/(fs/2)];
+%% passa-faixa para encontrar frequências na 2ª e 8ª teclagens
+% wnt1 = [697/(fs/2) 1633/(fs/2)]; 
 % kaisert1 = fir1(1000,wnt1,kaiser(1001,5));
-% kaisert2 = fir1(1000,wnt2,kaiser(1001,5));
-% kaiserteste = kaisert1 + kaisert2;
-% sinalTeste = conv(sinal_final, kaiserteste,'same');
+% sinalTeste = conv(sinal_final, kaisert1,'same');
 % 
 % inicio = [1.264 1.925 2.7880 3.784 4.613 5.411 6.42 7.05 7.768];
 % % termino = [1.488 2.232 2.954 3.934 4.782 5.56 6.663 7.216 7.908];
